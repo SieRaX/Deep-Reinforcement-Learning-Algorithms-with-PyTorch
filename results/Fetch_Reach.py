@@ -1,7 +1,11 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 import gym
 
 from agents.actor_critic_agents.DDPG import DDPG
-from agents.actor_critic_agents.DDPG_HER import DDPG_HER
+from agents.actor_critic_agents.DDPG_HER_Che import DDPG_HER_Che
 from utilities.data_structures.Config import Config
 from agents.Trainer import Trainer
 
@@ -10,6 +14,7 @@ config = Config()
 config.seed = 1
 config.environment = gym.make("FetchReach-v1")
 config.num_episodes_to_run = 1000
+#config.num_episodes_to_run = 2000
 config.file_to_save_data_results = None
 config.file_to_save_results_graph = None
 config.show_solution_score = False
@@ -58,7 +63,8 @@ config.hyperparameters = {
 
 
 if __name__== '__main__':
-    AGENTS = [DDPG, DDPG_HER]
+    AGENTS = [DDPG, DDPG_HER_Che]
+    #AGENTS = [DDPG_HER_Che, DDPG]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
 

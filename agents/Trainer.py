@@ -33,6 +33,7 @@ class Trainer(object):
             "Hill Climbing": "Stochastic_Policy_Search_Agents",
             "DDPG": "Actor_Critic_Agents",
             "DDPG-HER": "Actor_Critic_Agents",
+            "DDPG-HER-Che": "Actor_Critic_Agents",
             "TD3": "Actor_Critic_Agents",
             "A2C": "Actor_Critic_Agents",
             "A3C": "Actor_Critic_Agents",
@@ -60,6 +61,7 @@ class Trainer(object):
             "DDPG": "#800000",
             "DQN-HER": "#008000",
             "DDPG-HER": "#008000",
+            "DDPG-HER-Che": "#008000",
             "TD3": "#E74C3C",
             "h-DQN": "#D35400",
             "SNN-HRL": "#800000",
@@ -101,7 +103,8 @@ class Trainer(object):
         for run in range(self.config.runs_per_agent):
             agent_config = copy.deepcopy(self.config)
 
-            if self.environment_has_changeable_goals(agent_config.environment) and self.agent_cant_handle_changeable_goals_without_flattening(agent_name):
+            if self.environment_has_changeable_goals(agent_config.environment) \
+                and self.agent_cant_handle_changeable_goals_without_flattening(agent_name):
                 print("Flattening changeable-goal environment for agent {}".format(agent_name))
                 agent_config.environment = gym.wrappers.FlattenDictWrapper(agent_config.environment,
                                                                            dict_keys=["observation", "desired_goal"])
@@ -114,7 +117,7 @@ class Trainer(object):
             self.environment_name = agent.environment_title
             print(agent.hyperparameters)
             print("RANDOM SEED " , agent_config.seed)
-            game_scores, rolling_scores, time_taken = agent.run_n_episodes()
+            game_scores, rolling_scores, time_taken = agent.run_n_episodes() ##************
             print("Time taken: {}".format(time_taken), flush=True)
             self.print_two_empty_lines()
             agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])

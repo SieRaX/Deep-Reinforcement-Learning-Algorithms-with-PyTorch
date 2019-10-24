@@ -13,12 +13,18 @@ class DQN_HER(HER_Base, DQN):
         """Runs a step within a game including a learning step if required"""
         while not self.done:
             self.action = self.pick_action()
+            
+            '''This is just concating goals and upcoming states'''
             self.conduct_action_in_changeable_goal_envs(self.action)
             if self.time_for_q_network_to_learn():
                 for _ in range(self.hyperparameters["learning_iterations"]):
                     self.learn(experiences=self.sample_from_HER_and_Ordinary_Buffer())
             self.track_changeable_goal_episodes_data()
             self.save_experience()
+
+            #After this the HER algorithm saves not only the original epsiode,
+            #It saves episodes that the goal is the state that made triggered the
+            #done variable to true. 
             if self.done: self.save_alternative_experience()
             self.state_dict = self.next_state_dict  # this is to set the state for the next iteration
             self.state = self.next_state

@@ -34,12 +34,15 @@ class DDPG(Base_Agent):
             # print("State ", self.state.shape)
             self.action = self.pick_action()
             self.conduct_action(self.action)
+            
+            # This is the learning part
             if self.time_for_critic_and_actor_to_learn():
                 for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
                     states, actions, rewards, next_states, dones = self.sample_experiences()
                     self.critic_learn(states, actions, rewards, next_states, dones)
                     self.actor_learn(states)
             self.save_experience()
+            ######################
             self.state = self.next_state #this is to set the state for the next iteration
             self.global_step_number += 1
         self.episode_number += 1

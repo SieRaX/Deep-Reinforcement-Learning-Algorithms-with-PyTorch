@@ -1,3 +1,7 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+
 from gym.wrappers import FlattenDictWrapper
 from agents.DQN_agents.DQN_HER import DQN_HER
 from environments.Bit_Flipping_Environment import Bit_Flipping_Environment
