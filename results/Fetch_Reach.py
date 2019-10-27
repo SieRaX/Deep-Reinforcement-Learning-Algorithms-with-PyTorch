@@ -12,9 +12,9 @@ from agents.Trainer import Trainer
 
 config = Config()
 config.seed = 1
-#config.environment = gym.make("FetchReach-v1")
-config.environment = gym.make("FetchPush-v1")
-config.num_episodes_to_run = 1000
+config.environment = gym.make("FetchReach-v1")
+#config.environment = gym.make("FetchPush-v1")
+config.num_episodes_to_run = 2000
 #config.num_episodes_to_run = 2000
 config.file_to_save_data_results = None
 config.file_to_save_results_graph = None
@@ -22,7 +22,8 @@ config.show_solution_score = False
 config.visualise_individual_results = False
 config.visualise_overall_agent_results = True
 config.standard_deviation_results = 1.0
-config.runs_per_agent = 3
+#config.runs_per_agent = 3
+config.runs_per_agent = 25
 config.use_GPU = False
 config.overwrite_existing_results_file = False
 config.randomise_random_seed = True
@@ -64,8 +65,8 @@ config.hyperparameters = {
 
 
 if __name__== '__main__':
-    AGENTS = [DDPG, DDPG_HER_Che]
-    #AGENTS = [DDPG_HER_Che, DDPG]
+    #AGENTS = [DDPG, DDPG_HER_Che]
+    AGENTS = [DDPG_HER_Che, DDPG]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()
 
