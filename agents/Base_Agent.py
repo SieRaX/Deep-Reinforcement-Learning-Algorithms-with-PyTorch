@@ -76,10 +76,14 @@ class Base_Agent(object):
 
     def get_action_size(self):
         """Gets the action_size for the gym env into the correct shape for a neural network"""
-        if "overwrite_action_size" in self.config.__dict__: return self.config.overwrite_action_size
-        if "action_size" in self.environment.__dict__: return self.environment.action_size
-        if self.action_types == "DISCRETE": return self.environment.action_space.n
-        else: return self.environment.action_space.shape[0]
+        if "overwrite_action_size" in self.config.__dict__:
+            return self.config.overwrite_action_size
+        if "action_size" in self.environment.__dict__:
+            return self.environment.action_size
+        if self.action_types == "DISCRETE":
+            return self.environment.action_space.n
+        else:
+            return self.environment.action_space.shape[0]
 
     def get_state_size(self):
         """Gets the state_size for the gym env into the correct shape for a neural network"""
@@ -195,6 +199,13 @@ class Base_Agent(object):
 
     def conduct_action(self, action):
         """Conducts an action in the environment"""
+
+
+        ###
+        # print("Env: ", self.environment)
+        # print("Action: ", action)
+        ###
+
         self.next_state, self.reward, self.done, _ = self.environment.step(action)
         self.total_episode_score_so_far += self.reward
         if self.hyperparameters["clip_rewards"]: self.reward =  max(min(self.reward, 1.0), -1.0)

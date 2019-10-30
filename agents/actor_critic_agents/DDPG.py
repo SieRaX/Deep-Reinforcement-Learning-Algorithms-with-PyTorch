@@ -4,6 +4,9 @@ from torch import optim
 from agents.Base_Agent import Base_Agent
 from utilities.data_structures.Replay_Buffer import Replay_Buffer
 from exploration_strategies.OU_Noise_Exploration import OU_Noise_Exploration
+import numpy as np
+
+import time
 
 class DDPG(Base_Agent):
     """A DDPG Agent"""
@@ -33,6 +36,13 @@ class DDPG(Base_Agent):
         while not self.done:
             # print("State ", self.state.shape)
             self.action = self.pick_action()
+
+            """This is for the Cart-Pole environment"""
+            if(self.get_environment_title() == "CartPole"):
+                self.action = np.argmax(self.action)
+                # print(self.action)
+            """"""
+
             self.conduct_action(self.action)
             
             # This is the learning part
@@ -93,6 +103,12 @@ class DDPG(Base_Agent):
         return critic_targets_current
 
     def compute_expected_critic_values(self, states, actions):
+
+        #%%%%%
+        print("compute_expected_critic_values> ")
+        print("states: ", states, "\nactions: ", actions)
+        print("state shape: ", states.size(), "action shape: ", actions.size())
+
         """Computes the expected critic values to be used in the loss for the critic"""
         critic_expected = self.critic_local(torch.cat((states, actions), 1))
         return critic_expected
