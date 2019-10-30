@@ -39,11 +39,17 @@ class DDPG(Base_Agent):
 
             """This is for the Cart-Pole environment"""
             if(self.get_environment_title() == "CartPole"):
-                self.action = np.argmax(self.action)
+                go_action = np.argmax(self.action)
+                self.action = np.zeros(2)
                 # print(self.action)
-            """"""
 
-            self.conduct_action(self.action)
+                self.action[go_action] = 1
+                # self.action = np.put(self.action, go_action, 1)
+                # print(self.action)
+                self.conduct_action(go_action)
+
+            else:
+                self.conduct_action(self.action)
             
             # This is the learning part
             if self.time_for_critic_and_actor_to_learn():
@@ -105,9 +111,14 @@ class DDPG(Base_Agent):
     def compute_expected_critic_values(self, states, actions):
 
         #%%%%%
-        print("compute_expected_critic_values> ")
-        print("states: ", states, "\nactions: ", actions)
-        print("state shape: ", states.size(), "action shape: ", actions.size())
+        # print("compute_expected_critic_values> ")
+        # print("states: ", states, "\nactions: ", actions)
+        # print("state shape: ", states.size(), "action shape: ", actions.size())
+
+        #%%%%%
+        # print("What are you going to feed in the critic: ", torch.cat((states, actions), 1))
+        #So, the concate is not the problem.
+        # print(self.critic_local)
 
         """Computes the expected critic values to be used in the loss for the critic"""
         critic_expected = self.critic_local(torch.cat((states, actions), 1))
