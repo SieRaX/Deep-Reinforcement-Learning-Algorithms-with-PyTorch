@@ -71,7 +71,7 @@ config.hyperparameters = {
 
 
 if __name__== '__main__':
-    AGENTS = [DDPG, DDPG_HER_Che]
+    AGENTS = [DDPG_HER_Che, DDPG]
     #AGENTS = [DDPG_HER_Che, DDPG]
     trainer = Trainer(config, AGENTS)
     trainer.run_games_for_agents()

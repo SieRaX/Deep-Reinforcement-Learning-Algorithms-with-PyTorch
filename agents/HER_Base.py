@@ -18,6 +18,7 @@ class HER_Base(object):
 
         self.state_dict = self.environment.reset()
 
+        print("state_dict")
         print(self.state_dict)
         self.observation = self.state_dict["observation"]
         self.desired_goal = self.state_dict["desired_goal"]
