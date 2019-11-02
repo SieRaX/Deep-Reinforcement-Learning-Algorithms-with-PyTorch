@@ -75,6 +75,7 @@ class Trainer(object):
 
     def run_games_for_agents(self):
         """Run a set of games for each agent. Optionally visualising and/or saving the results"""
+        print(self.config.file_to_save_results_graph)
         self.results = self.create_object_to_store_results()
         for agent_number, agent_class in enumerate(self.agents):
             agent_name = agent_class.agent_name
@@ -83,8 +84,10 @@ class Trainer(object):
                 agent_rolling_score_results = [results[1] for results in  self.results[agent_name]]
                 self.visualise_overall_agent_results(agent_rolling_score_results, agent_name, show_mean_and_std_range=True)
         if self.config.file_to_save_data_results: self.save_obj(self.results, self.config.file_to_save_data_results)
+
+
         if self.config.file_to_save_results_graph: plt.savefig(self.config.file_to_save_results_graph, bbox_inches="tight")
-        plt.show()
+        #plt.show()
         return self.results
 
     def create_object_to_store_results(self):

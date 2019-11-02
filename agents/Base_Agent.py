@@ -56,6 +56,9 @@ class Base_Agent(object):
         except AttributeError:
             try:
                 if str(self.environment.unwrapped)[1:11] == "FetchReach": return "FetchReach"
+                elif str(self.environment.unwrapped)[1:16] == "FetchPickAndPlace": return "FetchPickAndPlace"
+                elif str(self.environment.unwrapped)[1:10] == "FetchPush": return "FetchPush"
+                elif str(self.environment.unwrapped)[1:11] == "FetchSlide": return "FetchSlide"
                 elif str(self.environment.unwrapped)[1:8] == "AntMaze": return "AntMaze"
                 elif str(self.environment.unwrapped)[1:7] == "Hopper": return "Hopper"
                 elif str(self.environment.unwrapped)[1:9] == "Walker2d": return "Walker2d"
@@ -76,14 +79,10 @@ class Base_Agent(object):
 
     def get_action_size(self):
         """Gets the action_size for the gym env into the correct shape for a neural network"""
-        if "overwrite_action_size" in self.config.__dict__:
-            return self.config.overwrite_action_size
-        if "action_size" in self.environment.__dict__:
-            return self.environment.action_size
-        if self.action_types == "DISCRETE":
-            return self.environment.action_space.n
-        else:
-            return self.environment.action_space.shape[0]
+        if "overwrite_action_size" in self.config.__dict__: return self.config.overwrite_action_size
+        if "action_size" in self.environment.__dict__: return self.environment.action_size
+        if self.action_types == "DISCRETE": return self.environment.action_space.n
+        else: return self.environment.action_space.shape[0]
 
     def get_state_size(self):
         """Gets the state_size for the gym env into the correct shape for a neural network"""
@@ -97,7 +96,8 @@ class Base_Agent(object):
     def get_score_required_to_win(self):
         """Gets average score required to win game"""
         print("TITLE ", self.environment_title)
-        if self.environment_title == "FetchReach": return -5
+
+        if self.environment_title in ["FetchReach", "FetchPush", "FetchSlide", "FetchPickAndPlace"]: return -5
         if self.environment_title in ["AntMaze", "Hopper", "Walker2d"]:
             print("Score required to win set to infinity therefore no learning rate annealing will happen")
             return float("inf")
@@ -110,15 +110,16 @@ class Base_Agent(object):
 
     def get_trials(self):
         """Gets the number of trials to average a score over"""
-        if self.environment_title in ["AntMaze", "FetchReach", "Hopper", "Walker2d", "CartPole"]: return 100
+        if self.environment_title in ["AntMaze", "FetchReach", "Hopper", "Walker2d", \
+                                      "CartPole", "FetchPush", "FetchSlide", "FetchPickAndPlace"]: return 100
         try: return self.environment.unwrapped.trials
         except AttributeError: return self.environment.spec.trials
 
     def setup_logger(self):
         """Sets up the logger"""
         filename = "Training.log"
-        try: 
-            if os.path.isfile(filename): 
+        try:
+            if os.path.isfile(filename):
                 os.remove(filename)
         except: pass
 
@@ -199,13 +200,6 @@ class Base_Agent(object):
 
     def conduct_action(self, action):
         """Conducts an action in the environment"""
-
-
-        ###
-        # print("Env: ", self.environment)
-        # print("Action: ", action)
-        ###
-
         self.next_state, self.reward, self.done, _ = self.environment.step(action)
         self.total_episode_score_so_far += self.reward
         if self.hyperparameters["clip_rewards"]: self.reward =  max(min(self.reward, 1.0), -1.0)
@@ -232,9 +226,8 @@ class Base_Agent(object):
                 self.max_rolling_score_seen = self.rolling_results[-1]
 
     def print_rolling_result(self):
-        
         """Prints out the latest episode results"""
-        text = """"\r Episode {0}, Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}\n"""
+        text = """"\r Episode {0}, Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}"""
         sys.stdout.write(text.format(len(self.game_full_episode_scores), self.rolling_results[-1], self.max_rolling_score_seen,
                                      self.game_full_episode_scores[-1], self.max_episode_score_seen))
         sys.stdout.flush()
