@@ -56,7 +56,7 @@ class Base_Agent(object):
         except AttributeError:
             try:
                 if str(self.environment.unwrapped)[1:11] == "FetchReach": return "FetchReach"
-                elif str(self.environment.unwrapped)[1:16] == "FetchPickAndPlace": return "FetchPickAndPlace"
+                elif str(self.environment.unwrapped)[1:18] == "FetchPickAndPlace": return "FetchPickAndPlace"
                 elif str(self.environment.unwrapped)[1:10] == "FetchPush": return "FetchPush"
                 elif str(self.environment.unwrapped)[1:11] == "FetchSlide": return "FetchSlide"
                 elif str(self.environment.unwrapped)[1:8] == "AntMaze": return "AntMaze"
@@ -227,7 +227,7 @@ class Base_Agent(object):
 
     def print_rolling_result(self):
         """Prints out the latest episode results"""
-        text = """"\r Episode {0}, Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}"""
+        text = """\r Episode {0}, Score: {3: .2f}, Max score seen: {4: .2f}, Rolling score: {1: .2f}, Max rolling score seen: {2: .2f}"""
         sys.stdout.write(text.format(len(self.game_full_episode_scores), self.rolling_results[-1], self.max_rolling_score_seen,
                                      self.game_full_episode_scores[-1], self.max_episode_score_seen))
         sys.stdout.flush()
