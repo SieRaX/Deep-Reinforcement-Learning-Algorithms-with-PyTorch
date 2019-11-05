@@ -123,11 +123,20 @@ class Trainer(object):
             game_scores, rolling_scores, time_taken = agent.run_n_episodes() ##************
             print("Time taken: {}".format(time_taken), flush=True)
             self.print_two_empty_lines()
-            agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
+
+            episode_succeded = agent.achieved_required_score_at_index()
+            if episode_succeded >= 0 and episode_succeded <= 100:
+                # we will not accept runs that episode succeeded too early it is an anomoly
+                print("Since this run succeeded at episode: {}, it will be neglected".format(episode_succeded))
+
+            else:
+                agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
+
             if self.config.visualise_individual_results:
                 self.visualise_overall_agent_results([rolling_scores], agent_name, show_each_run=True)
                 plt.show()
             agent_round += 1
+
         self.results[agent_name] = agent_results
 
     def environment_has_changeable_goals(self, env):
