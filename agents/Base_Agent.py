@@ -45,6 +45,9 @@ class Base_Agent(object):
         gym.logger.set_level(40)  # stops it from printing an unnecessary warning
         self.log_game_info()
 
+        #adding list of initial states
+        self.initial_state_list = []
+
     def step(self):
         """Takes a step in the game. This method must be overriden by any agent"""
         raise ValueError("Step needs to be implemented by the agent")
@@ -161,6 +164,10 @@ class Base_Agent(object):
         """Resets the game information so we are ready to play a new episode"""
         self.environment.seed(self.config.seed)
         self.state = self.environment.reset()
+
+        #added state to track the anomalies.
+        self.initial_state_list.append(self.state)
+
         self.next_state = None
         self.action = None
         self.reward = None
