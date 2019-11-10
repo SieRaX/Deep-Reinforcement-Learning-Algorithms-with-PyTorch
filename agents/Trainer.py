@@ -6,6 +6,7 @@ import gym
 from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
+import datetime
 
 class Trainer(object):
     """Runs games for given agents. Optionally will visualise and save the results"""
@@ -128,6 +129,17 @@ class Trainer(object):
             if episode_succeded >= 0 and episode_succeded <= 1:
                 # we will not accept runs that episode succeeded too early it is an anomaly
                 print("Since this run succeeded at episode: {}, it will be neglected".format(episode_succeded))
+                print("The initial state of the anomaly is:")
+                print(agent.initial_state_list[episode_succeded])
+                print("Recording the anomaly: ")
+
+                f = open("Anomalies.txt", 'a')
+                string = "[" + datetime.date.today().strftime("%B %d, %Y")
+                string += "] [Agent: {}".format(agent_name)+"\n"
+                string += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
+                string += "Initial State: {}".format(agent.initial_state_list[episode_succeded])+"\n"
+                f.write(string)
+                f.close()
 
             else:
                 agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
