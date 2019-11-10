@@ -125,8 +125,8 @@ class Trainer(object):
             self.print_two_empty_lines()
 
             episode_succeded = agent.achieved_required_score_at_index()
-            if episode_succeded >= 0 and episode_succeded <= 100:
-                # we will not accept runs that episode succeeded too early it is an anomoly
+            if episode_succeded >= 0 and episode_succeded <= 1:
+                # we will not accept runs that episode succeeded too early it is an anomaly
                 print("Since this run succeeded at episode: {}, it will be neglected".format(episode_succeded))
 
             else:
