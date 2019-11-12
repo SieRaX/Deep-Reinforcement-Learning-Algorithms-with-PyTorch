@@ -7,6 +7,7 @@ from gym import wrappers
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
+from gym.wrappers import FlattenDictWrapper
 
 class Trainer(object):
     """Runs games for given agents. Optionally will visualise and save the results"""
@@ -110,7 +111,7 @@ class Trainer(object):
             if self.environment_has_changeable_goals(agent_config.environment) \
                 and self.agent_cant_handle_changeable_goals_without_flattening(agent_name):
                 print("Flattening changeable-goal environment for agent {}".format(agent_name))
-                agent_config.environment = gym.wrappers.FlattenDictWrapper(agent_config.environment,
+                agent_config.environment = FlattenDictWrapper(agent_config.environment,
                                                                            dict_keys=["observation", "desired_goal"])
 
             if self.config.randomise_random_seed: agent_config.seed = random.randint(0, 2**32 - 2)
