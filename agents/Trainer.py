@@ -88,7 +88,7 @@ class Trainer(object):
 
 
         if self.config.file_to_save_results_graph: plt.savefig(self.config.file_to_save_results_graph, bbox_inches="tight")
-        #plt.show()
+        plt.show()
         return self.results
 
     def create_object_to_store_results(self):
