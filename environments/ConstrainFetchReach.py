@@ -45,7 +45,7 @@ if __name__ == "__main__":
     initial_info_1 = {"initial_state": info["observation"], "goal": info["desired_goal"]}
 
     trigger = True
-    for i in range(10):
+    for i in range(100):
         info_1 = info
         info = env.reset()
         check1 = np.array_equal(info["achieved_goal"], info_1["achieved_goal"])
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     env_2 = ConstrainFetchReach(constrain = True, initial_info = initial_info_1)
     info = env_2.reset()
     trigger = True
-    for i in range(10):
+    for i in range(100):
         info_1 = info
         info = env_2.reset()
         check1 = np.array_equal(info["achieved_goal"], info_1["achieved_goal"])
