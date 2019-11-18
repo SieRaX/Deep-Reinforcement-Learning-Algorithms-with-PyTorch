@@ -14,7 +14,15 @@ class HER_Base(object):
     def reset_game(self):
         """Resets the game information so we are ready to play a new episode"""
 
+
         self.state_dict = self.environment.reset()
+
+        #added state to track the anomalies.
+        # print("\nEnv: ", self.environment)
+        # print("game reseted! Printing the reseted result: ", self.state_dict)
+        self.initial_state_list.append(self.state_dict)
+        # print("\ngame reseted! printing initial_state_list", self.initial_state_list)
+        ##
 
         self.observation = self.state_dict["observation"]
         self.desired_goal = self.state_dict["desired_goal"]
