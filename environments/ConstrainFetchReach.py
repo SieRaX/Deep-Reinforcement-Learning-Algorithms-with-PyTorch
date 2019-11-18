@@ -25,10 +25,9 @@ class ConstrainFetchReach(FetchReachEnv):
 
     def reset(self):
 
-        self.initial_state_1 = self.initial_info["initial_state"]
-
         if not self.constrain == None:
             super(RobotEnv, self).reset()
+            self.initial_state_1 = self.initial_info["initial_state"]
             did_reset_sim = False
             while not did_reset_sim:
                 did_reset_sim = self._reset_sim()
