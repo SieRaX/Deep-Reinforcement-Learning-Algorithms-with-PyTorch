@@ -3,7 +3,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import gym
-
+import numpy as np
 from agents.actor_critic_agents.DDPG import DDPG
 from agents.actor_critic_agents.DDPG_HER_Che import DDPG_HER_Che
 from agents.actor_critic_agents.DDPG_HER import DDPG_HER
@@ -17,17 +17,17 @@ config.environment = gym.make("FetchPush-v1")
 #config.environment = gym.make("FetchPush-v1")
 # config.environment = gym.make("FetchPickAndPlace-v1")
 #config.environment = gym.make("FetchSlide-v1")
-config.num_episodes_to_run = 2000
+config.num_episodes_to_run = 5
 #config.num_episodes_to_run = 2000
-#config.file_to_save_data_results = None
-config.file_to_save_results_graph = 'data_and_graphs/FetchPush_detecting_Anamaly.png'
+config.file_to_save_data_results = None
+# config.file_to_save_results_graph = 'data_and_graphs/FetchPush_detecting_Anamaly.png'
 config.file_to_save_results_graph = None
 config.show_solution_score = False
 config.visualise_individual_results = False
 config.visualise_overall_agent_results = True
 config.standard_deviation_results = 1.0
 #config.runs_per_agent = 3
-config.runs_per_agent = 3
+config.runs_per_agent = 10
 config.use_GPU = False
 config.overwrite_existing_results_file = False
 config.randomise_random_seed = True
@@ -69,8 +69,27 @@ config.hyperparameters = {
 
 
 if __name__== '__main__':
-    #AGENTS = [DDPG, DDPG_HER_Che]
-    AGENTS = [DDPG, DDPG_HER_Che, DDPG_HER]
-    trainer = Trainer(config, AGENTS)
-    trainer.run_games_for_agents()
+    #AGENTS = [DDPG_HER_Che]
+    AGENTS = [DDPG_HER_Che, DDPG_HER]
+    for i in range(10):
+        trainer = Trainer(config, AGENTS)
+        trainer.run_games_for_agents()
 
+    anomaly = []
+    normal = []
+    f = open("Normallist.txt", 'r')
+    lines = f.readlines()
+    for line in lines :
+        normal.append(float(line))
+
+    f = open("Anomaly_list.txt", 'r')
+    lines = f.readlines()
+    for line in lines :
+        anomaly.append(float(line))
+
+    anomaly = np.array(anomaly)
+    normal = np.array(normal)
+
+    print("The statictical result: ")
+    print("Normal>> total:{} mean: {}, std: {}".format(normal.size, np.mean(normal), np.std(normal)))
+    print("Anomaly>> total: {}mean: {}, std: {}".format(anomaly.size, np.mean(anomaly), np.std(anomaly)))
