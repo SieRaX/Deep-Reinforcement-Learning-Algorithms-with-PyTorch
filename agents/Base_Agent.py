@@ -167,6 +167,9 @@ class Base_Agent(object):
 
         #added state to track the anomalies.
         self.initial_state_list.append(self.state)
+        # print("\nEnv: ", self.environment)
+        # print("game reseted! Printing the reseted result: ", self.state)
+        # print("game reseted! Printing initial_state_list", self.initial_state_list)
 
         self.next_state = None
         self.action = None
