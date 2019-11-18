@@ -5,6 +5,7 @@ import os
 import gym
 from gym import wrappers
 import numpy as np
+from numpy import linalg as LA
 import matplotlib.pyplot as plt
 import datetime
 from gym.wrappers import FlattenDictWrapper
@@ -89,7 +90,7 @@ class Trainer(object):
 
 
         if self.config.file_to_save_results_graph: plt.savefig(self.config.file_to_save_results_graph, bbox_inches="tight")
-        plt.show()
+        # plt.show()
         return self.results
 
     def create_object_to_store_results(self):
@@ -130,20 +131,46 @@ class Trainer(object):
             if episode_succeded >= 0 and episode_succeded <= 1:
                 # we will not accept runs that episode succeeded too early it is an anomaly
                 print("Since this run succeeded at episode: {}, it will be neglected".format(episode_succeded))
-                print("The initial state of the anomaly is:")
-                print(agent.initial_state_list[episode_succeded])
-                print("Recording the anomaly: ")
+                # print("The initial state of the anomaly is:")
+                # print("list: ", agent.initial_state_list)
+                # print(agent.initial_state_list[episode_succeded])
+                print("Recording the anomaly...")
 
                 f = open("Anomalies.txt", 'a')
-                string = "[" + datetime.date.today().strftime("%B %d, %Y")
-                string += "] [Agent: {}".format(agent_name)+"\n"
+                f2 = open("Anomaly_list.txt", 'a')
+                string = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Anamaly!"
+                string += "] [Agent: {}".format(agent_name)+"]\n"
                 string += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
                 string += "Initial State: {}".format(agent.initial_state_list[episode_succeded])+"\n"
+                if("HER" in agent_name):
+                   string += "It is HER Case, L2 Norm is : "
+                   string += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))
+                   f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
+                   string += "\n--------------------------\n"
                 f.write(string)
                 f.close()
+                f2.close()
+
+
 
             else:
                 agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
+
+                # if ("HER" in agent_name):
+                #     f = open("Anomalies.txt", 'a')
+                #     f2 = open("Normallist.txt", 'a')
+                #     string1 = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Normal Case in HER!"
+                #     string1 += "] [Agent: {}".format(agent_name) + "]\n"
+                #     string1 += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
+                #     string1 += "Initial State: {}".format(agent.initial_state_list[episode_succeded]) + "\n"
+                #     string1 += "It is HER Case, L2 Norm is : \n"
+                #     string1 += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] -
+                #                       agent.initial_state_list[episode_succeded]["desired_goal"]))
+                #     string1 +=  "\n----------------------------\n"
+                #     f.write(string1)
+                #     f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
+                #     f.close()
+                #     f2.close()
 
             if self.config.visualise_individual_results:
                 self.visualise_overall_agent_results([rolling_scores], agent_name, show_each_run=True)
