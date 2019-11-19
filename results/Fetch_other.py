@@ -35,7 +35,12 @@ print("How many episodes per one run?: ", end="")
 episodes_to_run = int(input())
 print("How many runs per agent?: ", end="")
 runs_per_agent = int(input())
-
+print("Name of graph png?(0: None): ", end="")
+directory = input()
+if directory == "0":
+    directory = None
+else:
+    directory = "data_and_graphs/" + directory +".png"
 
 config = Config()
 config.seed = 1
@@ -51,7 +56,7 @@ if constrain_choice == -1:
 config.num_episodes_to_run = episodes_to_run
 config.file_to_save_data_results = None
 # config.file_to_save_results_graph = 'data_and_graphs/FetchPush_detecting_Anamaly.png'
-config.file_to_save_results_graph = None
+config.file_to_save_results_graph = directory
 config.show_solution_score = False
 config.visualise_individual_results = False
 config.visualise_overall_agent_results = True
