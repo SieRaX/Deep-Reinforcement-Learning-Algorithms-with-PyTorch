@@ -33,6 +33,7 @@ class DDPG(Base_Agent):
 
     def step(self):
         """Runs a step in the game"""
+
         while not self.done:
             # print("State ", self.state.shape)
             self.action = self.pick_action()
@@ -50,9 +51,12 @@ class DDPG(Base_Agent):
 
             else:
                 self.conduct_action(self.action)
+                # print("action conducted! Rendering...")
+                # self.environment.render()
             
             # This is the learning part
             if self.time_for_critic_and_actor_to_learn():
+                # print("It is time to learn!!")
                 for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
                     states, actions, rewards, next_states, dones = self.sample_experiences()
                     self.critic_learn(states, actions, rewards, next_states, dones)
@@ -62,6 +66,8 @@ class DDPG(Base_Agent):
             self.state = self.next_state #this is to set the state for the next iteration
             self.global_step_number += 1
         self.episode_number += 1
+        # print("The epsiode end! rendering!!")
+        # self.environment.render()
 
     def sample_experiences(self):
         return self.memory.sample()

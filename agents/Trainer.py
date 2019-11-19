@@ -14,6 +14,8 @@ class Trainer(object):
     """Runs games for given agents. Optionally will visualise and save the results"""
     def __init__(self, config, agents):
         self.config = config
+        # print("Initiating class!!")
+        # print(config.environment)
         self.agents = agents
         self.agent_to_agent_group = self.create_agent_to_agent_group_dictionary()
         self.agent_to_color_group = self.create_agent_to_color_dictionary()
@@ -106,6 +108,8 @@ class Trainer(object):
         agent_name = agent_class.agent_name
         agent_group = self.agent_to_agent_group[agent_name]
         agent_round = 1
+        # print("!!", self.config.environment)
+        # print(self.config.environment._max_episode_steps)
         for run in range(self.config.runs_per_agent):
             agent_config = copy.deepcopy(self.config)
 
@@ -114,6 +118,8 @@ class Trainer(object):
                 print("Flattening changeable-goal environment for agent {}".format(agent_name))
                 agent_config.environment = FlattenDictWrapper(agent_config.environment,
                                                                            dict_keys=["observation", "desired_goal"])
+            # print("!!!", agent_config.environment)
+            # print(agent_config.environment.env._max_episode_steps)
 
             if self.config.randomise_random_seed: agent_config.seed = random.randint(0, 2**32 - 2)
             agent_config.hyperparameters = agent_config.hyperparameters[agent_group]

@@ -68,10 +68,11 @@ class Base_Agent(object):
                 else:
                     name = self.environment.spec.id.split("-")[0]
             except AttributeError:
+                # print(self.environment.env)
                 name = str(self.environment.env)
+                if name[0] == "<": name = name[1:]
                 if name[0:10] == "TimeLimit<": name = name[10:]
                 name = name.split(" ")[0]
-                if name[0] == "<": name = name[1:]
                 if name[-3:] == "Env": name = name[:-3]
         return name
 
@@ -99,8 +100,8 @@ class Base_Agent(object):
     def get_score_required_to_win(self):
         """Gets average score required to win game"""
         print("TITLE ", self.environment_title)
-
         if self.environment_title in ["FetchReach", "FetchPush", "FetchSlide", "FetchPickAndPlace"]: return -5
+        if self.environment_title in ["ConstrainFetchReach", "ConstrainFetchPush", "ConstrainFetchSlide", "ConstrainFetchPickAndPlace"] : return -5
         if self.environment_title in ["AntMaze", "Hopper", "Walker2d"]:
             print("Score required to win set to infinity therefore no learning rate annealing will happen")
             return float("inf")
@@ -114,7 +115,9 @@ class Base_Agent(object):
     def get_trials(self):
         """Gets the number of trials to average a score over"""
         if self.environment_title in ["AntMaze", "FetchReach", "Hopper", "Walker2d", \
-                                      "CartPole", "FetchPush", "FetchSlide", "FetchPickAndPlace"]: return 100
+                                      "CartPole", "FetchPush", "FetchSlide", "FetchPickAndPlace",\
+                                      "ConstrainFetchReach", "ConstrainFetchPush", "ConstrainFetchSlide",
+                                      "ConstrainFetchPickAndPlace"]: return 100
         try: return self.environment.unwrapped.trials
         except AttributeError: return self.environment.spec.trials
 
@@ -164,6 +167,7 @@ class Base_Agent(object):
         """Resets the game information so we are ready to play a new episode"""
         self.environment.seed(self.config.seed)
         self.state = self.environment.reset()
+        #print("reseting game!")
 
         #added state to track the anomalies.
         self.initial_state_list.append(self.state)
@@ -196,12 +200,14 @@ class Base_Agent(object):
         self.episode_dones.append(self.done)
 
     def run_n_episodes(self, num_episodes=None, show_whether_achieved_goal=True, save_and_print_results=True):
+        #print("Running episodes!!")
         """Runs game to completion n times and then summarises results and saves model (if asked to)"""
         if num_episodes is None: num_episodes = self.config.num_episodes_to_run
         start = time.time()
         while self.episode_number < num_episodes:
             self.reset_game()
             self.step()
+            # print("step complete!!")
             if save_and_print_results: self.save_and_print_result()
         time_taken = time.time() - start
         if show_whether_achieved_goal: self.show_whether_achieved_goal()
@@ -211,6 +217,9 @@ class Base_Agent(object):
     def conduct_action(self, action):
         """Conducts an action in the environment"""
         self.next_state, self.reward, self.done, _ = self.environment.step(action)
+        # print(self.environment)
+        # print("Base Agent result:\n next_stat: {},\n reward: {},\n done: {}".format(self.next_state, self.reward, self.done))
+        # print("\n")
         self.total_episode_score_so_far += self.reward
         if self.hyperparameters["clip_rewards"]: self.reward =  max(min(self.reward, 1.0), -1.0)
 

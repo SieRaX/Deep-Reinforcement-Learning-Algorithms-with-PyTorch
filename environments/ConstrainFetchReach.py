@@ -4,6 +4,7 @@ from gym.envs.robotics.fetch.reach import FetchReachEnv
 import numpy as np
 # Ensure we get the path separator correct on windows
 from gym.envs.robotics.robot_env import RobotEnv
+from gym.wrappers.time_limit import TimeLimit
 
 MODEL_XML_PATH = os.path.join('fetch', 'reach.xml')
 
@@ -96,3 +97,10 @@ if __name__ == "__main__":
 
     if(trigger):
         print("The \"ConstrainedFetchReach\" is Same!!")
+    print(env)
+    print(env_2)
+    print(env_3)
+    print(ConstrainFetchReach)
+    print(TimeLimit(env_2, 250))
+    a = TimeLimit(env_2, 250)
+    print(a.spec.id)

@@ -4,8 +4,10 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 import random
-
-
+from environments.ConstrainFetchReach import ConstrainFetchReach
+from environments.ConstrainFetchPush import ConstrainFetchPush
+from environments.ConstrainFetchSlide import ConstrainFetchSlide
+from environments.ConstrainFetchPickAndPlace import ConstrainFetchPickAndPlace
 
 if __name__ == '__main__':
     x_desired = []
@@ -15,11 +17,14 @@ if __name__ == '__main__':
     x_achieved = []
     y_achieved = []
     z_achieved = []
+
+    env = gym.make("FetchReach-v1")
+    info = env.reset()
+    initial_info_1 = {"initial_state": info["observation"], "goal": info["desired_goal"]}
+    constrained_reach = ConstrainFetchPickAndPlace(constrain='Gaussian', initial_info=initial_info_1)
+
     for _ in range(10000):
-        env = gym.make("FetchReach-v1")
-        s = random.randrange(1, 10000)
-        env.seed(s)
-        a = env.reset()
+        a = constrained_reach.reset()
         x_d = a["desired_goal"][0]
         y_d = a["desired_goal"][1]
         z_d = a["desired_goal"][2]
@@ -61,12 +66,12 @@ if __name__ == '__main__':
     # ax.plot(x_desired, y_desired, z_desired, 'o', label = 'achieved goal')
     # ax.legend()
 
-    plt.hist(x_desired)
-    plt.show()
-    plt.hist(y_desired)
-    plt.show()
-    plt.hist(z_desired)
-    plt.show()
+    # plt.hist(x_desired)
+    # plt.show()
+    # plt.hist(y_desired)
+    # plt.show()
+    # plt.hist(z_desired)
+    # plt.show()
 
     fig = plt.figure()
     ax1 = fig.add_subplot(1, 3, 1)
