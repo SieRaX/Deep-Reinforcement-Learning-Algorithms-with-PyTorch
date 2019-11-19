@@ -102,25 +102,27 @@ config.hyperparameters = {
 if __name__== '__main__':
     #AGENTS = [DDPG_HER_Che]
     AGENTS = [DDPG, DDPG_HER_Che, DDPG_HER]
-    for i in range(10):
-        trainer = Trainer(config, AGENTS)
-        trainer.run_games_for_agents()
+    trainer = Trainer(config, AGENTS)
+    trainer.run_games_for_agents()
+    # for i in range(10):
+    #     trainer = Trainer(config, AGENTS)
+    #     trainer.run_games_for_agents()
 
-    anomaly = []
-    normal = []
-    f = open("Normallist.txt", 'r')
-    lines = f.readlines()
-    for line in lines :
-        normal.append(float(line))
-
-    f = open("Anomaly_list.txt", 'r')
-    lines = f.readlines()
-    for line in lines :
-        anomaly.append(float(line))
-
-    anomaly = np.array(anomaly)
-    normal = np.array(normal)
-
-    print("The statictical result: ")
-    print("Normal>> total:{} mean: {}, std: {}".format(normal.size, np.mean(normal), np.std(normal)))
-    print("Anomaly>> total: {}mean: {}, std: {}".format(anomaly.size, np.mean(anomaly), np.std(anomaly)))
+    # anomaly = []
+    # normal = []
+    # f = open("Normallist.txt", 'r')
+    # lines = f.readlines()
+    # for line in lines :
+    #     normal.append(float(line))
+    #
+    # f = open("Anomaly_list.txt", 'r')
+    # lines = f.readlines()
+    # for line in lines :
+    #     anomaly.append(float(line))
+    #
+    # anomaly = np.array(anomaly)
+    # normal = np.array(normal)
+    #
+    # print("The statictical result: ")
+    # print("Normal>> total:{} mean: {}, std: {}".format(normal.size, np.mean(normal), np.std(normal)))
+    # print("Anomaly>> total: {}mean: {}, std: {}".format(anomaly.size, np.mean(anomaly), np.std(anomaly)))

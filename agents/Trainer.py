@@ -140,22 +140,22 @@ class Trainer(object):
                 # print("The initial state of the anomaly is:")
                 # print("list: ", agent.initial_state_list)
                 # print(agent.initial_state_list[episode_succeded])
-                print("Recording the anomaly...")
-
-                f = open("Anomalies.txt", 'a')
-                f2 = open("Anomaly_list.txt", 'a')
-                string = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Anamaly!"
-                string += "] [Agent: {}".format(agent_name)+"]\n"
-                string += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
-                string += "Initial State: {}".format(agent.initial_state_list[episode_succeded])+"\n"
-                if("HER" in agent_name):
-                   string += "It is HER Case, L2 Norm is : "
-                   string += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))
-                   f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
-                   string += "\n--------------------------\n"
-                f.write(string)
-                f.close()
-                f2.close()
+                # print("Recording the anomaly...")
+                #
+                # f = open("Anomalies.txt", 'a')
+                # f2 = open("Anomaly_list.txt", 'a')
+                # string = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Anamaly!"
+                # string += "] [Agent: {}".format(agent_name)+"]\n"
+                # string += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
+                # string += "Initial State: {}".format(agent.initial_state_list[episode_succeded])+"\n"
+                # if("HER" in agent_name):
+                #    string += "It is HER Case, L2 Norm is : "
+                #    string += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))
+                #    f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
+                #    string += "\n--------------------------\n"
+                # f.write(string)
+                # f.close()
+                # f2.close()
 
 
 
