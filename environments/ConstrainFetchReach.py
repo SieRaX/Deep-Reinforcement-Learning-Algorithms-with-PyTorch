@@ -103,4 +103,3 @@ if __name__ == "__main__":
     print(ConstrainFetchReach)
     print(TimeLimit(env_2, 250))
     a = TimeLimit(env_2, 250)
-    print(a.spec.id)
