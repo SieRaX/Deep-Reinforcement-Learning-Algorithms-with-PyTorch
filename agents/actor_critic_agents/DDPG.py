@@ -33,10 +33,12 @@ class DDPG(Base_Agent):
 
     def step(self):
         """Runs a step in the game"""
+        # print("(DDPG) into the step")
 
         while not self.done:
             # print("State ", self.state.shape)
             self.action = self.pick_action()
+            # print("picked action")
 
             """This is for the Cart-Pole environment"""
             if(self.get_environment_title() == "CartPole"):
@@ -51,20 +53,27 @@ class DDPG(Base_Agent):
 
             else:
                 self.conduct_action(self.action)
-                # print("action conducted! Rendering...")
+                # print("(DDPG) action conducted! Rendering...")
                 # self.environment.render()
-            
+            # print("(DDPG)outside the loop")
+            # print(self.time_for_critic_and_actor_to_learn())
             # This is the learning part
             if self.time_for_critic_and_actor_to_learn():
-                # print("It is time to learn!!")
+                # print("(DDPG) It is time to learn!!")
                 for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
                     states, actions, rewards, next_states, dones = self.sample_experiences()
+                    # print("(DDPG) running in range")
                     self.critic_learn(states, actions, rewards, next_states, dones)
                     self.actor_learn(states)
+                    # print("(DDPG)running in range complete")
+
+            # print("(DDPG) outside of critic loop")
             self.save_experience()
+            # print("(DDPG) saving experience")
             ######################
             self.state = self.next_state #this is to set the state for the next iteration
             self.global_step_number += 1
+            # print("(DDPG) incrementing step number")
         self.episode_number += 1
         # print("The epsiode end! rendering!!")
         # self.environment.render()
@@ -84,29 +93,43 @@ class DDPG(Base_Agent):
 
     def critic_learn(self, states, actions, rewards, next_states, dones):
         """Runs a learning iteration for the critic"""
+        # print("(DDPG) inside the critic_learn()")
         loss = self.compute_loss(states, next_states, rewards, actions, dones)
+        # print("(DDPG) critic learn loss: ",loss)
         self.take_optimisation_step(self.critic_optimizer, self.critic_local, loss, self.hyperparameters["Critic"]["gradient_clipping_norm"])
         self.soft_update_of_target_network(self.critic_local, self.critic_target, self.hyperparameters["Critic"]["tau"])
 
     def compute_loss(self, states, next_states, rewards, actions, dones):
         """Computes the loss for the critic"""
+        # print("(DDPG) inside the compute_loss()")
         with torch.no_grad():
             critic_targets = self.compute_critic_targets(next_states, rewards, dones)
+        # print("(DDPG) after torch.no_grad")
         critic_expected = self.compute_expected_critic_values(states, actions)
         loss = functional.mse_loss(critic_expected, critic_targets)
         return loss
 
     def compute_critic_targets(self, next_states, rewards, dones):
         """Computes the critic target values to be used in the loss for the critic"""
+        # print("(DDPG) inside the compute_critic_targets")
         critic_targets_next = self.compute_critic_values_for_next_states(next_states)
         critic_targets = self.compute_critic_values_for_current_states(rewards, critic_targets_next, dones)
         return critic_targets
 
     def compute_critic_values_for_next_states(self, next_states):
         """Computes the critic values for next states to be used in the loss for the critic"""
+        # print("(DDPG) inside the compute_critic_values_for_next_states")
         with torch.no_grad():
+            # print("(DDPG) comput_critic_values_for_next_states()) inside the torch.no_grad()")
+            # input()
+            # print(self.actor_target)
+            # print(next_states)
+            # print(self.actor_target(next_states))
             actions_next = self.actor_target(next_states)
+            # input()
+            # print("(DDPG comput_critic_values_for_next_states()) after calculating actor_target")
             critic_targets_next = self.critic_target(torch.cat((next_states, actions_next), 1))
+        # print("(DDPG compute_critic_values_for_next_states()) after torch.no_grad")
         return critic_targets_next
 
     def compute_critic_values_for_current_states(self, rewards, critic_targets_next, dones):
@@ -115,17 +138,6 @@ class DDPG(Base_Agent):
         return critic_targets_current
 
     def compute_expected_critic_values(self, states, actions):
-
-        #%%%%%
-        # print("compute_expected_critic_values> ")
-        # print("states: ", states, "\nactions: ", actions)
-        # print("state shape: ", states.size(), "action shape: ", actions.size())
-
-        #%%%%%
-        # print("What are you going to feed in the critic: ", torch.cat((states, actions), 1))
-        #So, the concate is not the problem.
-        # print(self.critic_local)
-
         """Computes the expected critic values to be used in the loss for the critic"""
         critic_expected = self.critic_local(torch.cat((states, actions), 1))
         return critic_expected

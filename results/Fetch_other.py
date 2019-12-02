@@ -1,6 +1,7 @@
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+import time
 
 import gym
 import numpy as np
@@ -9,7 +10,8 @@ from agents.actor_critic_agents.DDPG_HER_Che import DDPG_HER_Che
 from agents.actor_critic_agents.DDPG_HER import DDPG_HER
 from utilities.data_structures.Config import Config
 from gym.wrappers.time_limit import TimeLimit
-from agents.Trainer import Trainer
+from agents.GridTrainer import Trainer as grid_Train
+from agents.Trainer import Trainer as norm_Train
 
 from environments.ConstrainFetchPush import ConstrainFetchPush
 from environments.ConstrainFetchReach import ConstrainFetchReach
@@ -107,8 +109,20 @@ config.hyperparameters = {
 if __name__== '__main__':
     #AGENTS = [DDPG_HER_Che]
     AGENTS = [DDPG, DDPG_HER_Che, DDPG_HER]
-    trainer = Trainer(config, AGENTS)
-    trainer.run_games_for_agents()
+
+    grid_Train = grid_Train(config, AGENTS)
+    # start = time.time()
+    grid_Train.run_games_for_agents()
+    # grid_time = time.time() - start
+
+    # norm_trainer = norm_Train(config, AGENTS)
+    # start = time.time()
+    # norm_trainer.run_games_for_agents()
+    # norm_time = time.time() - start
+
+    # print("non-multiprocess time: ", norm_time)
+    # print("multiprocess time: ", grid_time)
+
     # for i in range(10):
     #     trainer = Trainer(config, AGENTS)
     #     trainer.run_games_for_agents()

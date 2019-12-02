@@ -92,7 +92,7 @@ class Trainer(object):
 
 
         if self.config.file_to_save_results_graph: plt.savefig(self.config.file_to_save_results_graph, bbox_inches="tight")
-        plt.show()
+        #plt.show()
         return self.results
 
     def create_object_to_store_results(self):
@@ -180,7 +180,7 @@ class Trainer(object):
 
             if self.config.visualise_individual_results:
                 self.visualise_overall_agent_results([rolling_scores], agent_name, show_each_run=True)
-                plt.show()
+                #plt.show()
             agent_round += 1
 
         self.results[agent_name] = agent_results

@@ -200,13 +200,15 @@ class Base_Agent(object):
         self.episode_next_states.append(self.next_state)
         self.episode_dones.append(self.done)
 
-    def run_n_episodes(self, num_episodes=None, show_whether_achieved_goal=True, save_and_print_results=True):
-        #print("Running episodes!!")
+    def run_n_episodes(self, queue = None, num_episodes=None, show_whether_achieved_goal=True, save_and_print_results=True):
+        # print("Running episodes!!")
         """Runs game to completion n times and then summarises results and saves model (if asked to)"""
         if num_episodes is None: num_episodes = self.config.num_episodes_to_run
         start = time.time()
         while self.episode_number < num_episodes:
+            # print("\n\n(Base_Agent) reseting game!")
             self.reset_game()
+            # print("(Base_Agent) stepping game!")
             self.step()
             # print("step complete!!")
             if save_and_print_results: self.save_and_print_result()
@@ -214,7 +216,11 @@ class Base_Agent(object):
         if show_whether_achieved_goal: self.show_whether_achieved_goal()
         if self.config.save_model: self.locally_save_policy()
 
-        print("Running complete!: ", multiprocessing.current_process().name)
+        if queue is not None:
+            # print("(Base_Agent.py)entering Q!!")
+            queue.put((self.game_full_episode_scores, self.rolling_results, time_taken))
+
+        # print("Running complete!: ", multiprocessing.current_process().name)
 
         return self.game_full_episode_scores, self.rolling_results, time_taken
 

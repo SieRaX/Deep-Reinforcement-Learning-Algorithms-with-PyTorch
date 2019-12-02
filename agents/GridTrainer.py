@@ -2,15 +2,14 @@ import copy
 import random
 import pickle
 import os
-import logging
 import gym
 from gym import wrappers
-import multiprocessing
 import numpy as np
 from numpy import linalg as LA
 import matplotlib.pyplot as plt
 import datetime
 from gym.wrappers import FlattenDictWrapper
+import torch.multiprocessing as mp
 
 class Trainer(object):
     """Runs games for given agents. Optionally will visualise and save the results"""
@@ -113,7 +112,7 @@ class Trainer(object):
         # print("!!", self.config.environment)
         # print(self.config.environment._max_episode_steps)
 
-
+        #&&&&&&&&&&&&
         agent_config = copy.deepcopy(self.config)
 
         if self.environment_has_changeable_goals(agent_config.environment) \
@@ -126,88 +125,26 @@ class Trainer(object):
         agent_config.hyperparameters = agent_config.hyperparameters[agent_group]
         print("AGENT NAME: {}".format(agent_name))
 
+        manager = mp.Manager()
+        return_q = manager.Queue()
         agent = agent_class(agent_config)
         self.environment_name = agent.environment_title
+        jobs = []
+        for i in range(self.config.runs_per_agent):
+            p = mp.Process(target=agent.run_n_episodes, args=(return_q,))
+            jobs.append(p)
+            p.start()
 
-        pool = multiprocessing.Pool(processes=self.config.runs_per_agent)
-        pool_result = pool.map(agent.run_n_episodes)
+        for proc in jobs:
+            proc.join()
 
-        for game_scores, rolling_scores, time_taken in pool_result:
-            agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
-
-        # for run in range(self.config.runs_per_agent):
-        #     agent_config = copy.deepcopy(self.config)
-        #
-        #     if self.environment_has_changeable_goals(agent_config.environment) \
-        #             and self.agent_cant_handle_changeable_goals_without_flattening(agent_name):
-        #         print("Flattening changeable-goal environment for agent {}".format(agent_name))
-        #         agent_config.environment = FlattenDictWrapper(agent_config.environment,
-        #                                                       dict_keys=["observation", "desired_goal"])
-        #     # print("!!!", agent_config.environment)
-        #     # print(agent_config.environment.env._max_episode_steps)
-        #
-        #     if self.config.randomise_random_seed: agent_config.seed = random.randint(0, 2**32 - 2)
-        #     agent_config.hyperparameters = agent_config.hyperparameters[agent_group]
-        #     print("AGENT NAME: {}".format(agent_name))
-        #     print("\033[1m" + "{}.{}: {}".format(agent_number, agent_round, agent_name) + "\033[0m", flush=True)
-        #     agent = agent_class(agent_config)
-        #     self.environment_name = agent.environment_title
-        #     print(agent.hyperparameters)
-        #     print("RANDOM SEED " , agent_config.seed)
-        #     game_scores, rolling_scores, time_taken = agent.run_n_episodes() ##************
-        #     print("Time taken: {}".format(time_taken), flush=True)
-        #     self.print_two_empty_lines()
-        #
-        #     episode_succeded = agent.achieved_required_score_at_index()
-        #     if episode_succeded >= 0 and episode_succeded <= 1:
-        #         # we will not accept runs that episode succeeded too early it is an anomaly
-        #         print("Since this run succeeded at episode: {}, it will be neglected".format(episode_succeded))
-        #         # print("The initial state of the anomaly is:")
-        #         # print("list: ", agent.initial_state_list)
-        #         # print(agent.initial_state_list[episode_succeded])
-        #         # print("Recording the anomaly...")
-        #         #
-        #         # f = open("Anomalies.txt", 'a')
-        #         # f2 = open("Anomaly_list.txt", 'a')
-        #         # string = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Anamaly!"
-        #         # string += "] [Agent: {}".format(agent_name)+"]\n"
-        #         # string += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
-        #         # string += "Initial State: {}".format(agent.initial_state_list[episode_succeded])+"\n"
-        #         # if("HER" in agent_name):
-        #         #    string += "It is HER Case, L2 Norm is : "
-        #         #    string += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))
-        #         #    f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
-        #         #    string += "\n--------------------------\n"
-        #         # f.write(string)
-        #         # f.close()
-        #         # f2.close()
-        #
-        #
-        #
-        #     else:
-        #         agent_results.append([game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
-        #
-        #         # if ("HER" in agent_name):
-        #         #     f = open("Anomalies.txt", 'a')
-        #         #     f2 = open("Normallist.txt", 'a')
-        #         #     string1 = "[" + datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + "Normal Case in HER!"
-        #         #     string1 += "] [Agent: {}".format(agent_name) + "]\n"
-        #         #     string1 += "RANDOM SEED: {}".format(agent_config.seed) + "\n"
-        #         #     string1 += "Initial State: {}".format(agent.initial_state_list[episode_succeded]) + "\n"
-        #         #     string1 += "It is HER Case, L2 Norm is : \n"
-        #         #     string1 += str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] -
-        #         #                       agent.initial_state_list[episode_succeded]["desired_goal"]))
-        #         #     string1 +=  "\n----------------------------\n"
-        #         #     f.write(string1)
-        #         #     f2.write(str(LA.norm(agent.initial_state_list[episode_succeded]["achieved_goal"] - agent.initial_state_list[episode_succeded]["desired_goal"]))+"\n")
-        #         #     f.close()
-        #         #     f2.close()
-        #
-        #     if self.config.visualise_individual_results:
-        #         self.visualise_overall_agent_results([rolling_scores], agent_name, show_each_run=True)
-        #         plt.show()
-        #     agent_round += 1
-
+        # print("(GridTrainer.py) process end!")
+        for game_scores, rolling_scores, time_taken in iter(return_q.get, None):
+            agent_results.append(
+                [game_scores, rolling_scores, len(rolling_scores), -1 * max(rolling_scores), time_taken])
+            if return_q.empty():
+                break
+        #&&&&&&&&&
         self.results[agent_name] = agent_results
 
     def environment_has_changeable_goals(self, env):
