@@ -1,15 +1,14 @@
 import logging
 import os
 import sys
+import cv2
 import multiprocessing
 import gym
 import random
 import numpy as np
 import torch
 import time
-# import tensorflow as tf
 from nn_builder.pytorch.NN import NN
-# from tensorboardX import SummaryWriter
 from torch.optim import optimizer
 
 class Base_Agent(object):
@@ -48,6 +47,14 @@ class Base_Agent(object):
 
         #adding list of initial states
         self.initial_state_list = []
+
+        # #adding list of rendering results to make videos
+        # self.render=[]
+        self.video_mode = config.video_mode
+
+        self.environment.reset()
+        img = self.environment.render('rgb_array')
+        self.height, self.width, self.channel = img.shape
 
     def step(self):
         """Takes a step in the game. This method must be overriden by any agent"""
@@ -168,6 +175,8 @@ class Base_Agent(object):
         """Resets the game information so we are ready to play a new episode"""
         self.environment.seed(self.config.seed)
         self.state = self.environment.reset()
+        img = self.environment.render('rgb_array')
+        self.height, self.width, self.channel = img.shape
         #print("reseting game!")
 
         #added state to track the anomalies.
@@ -212,7 +221,9 @@ class Base_Agent(object):
             self.step()
             # print("step complete!!")
             if save_and_print_results: self.save_and_print_result()
+
         time_taken = time.time() - start
+
         if show_whether_achieved_goal: self.show_whether_achieved_goal()
         if self.config.save_model: self.locally_save_policy()
 

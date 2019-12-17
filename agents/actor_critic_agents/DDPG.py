@@ -5,6 +5,8 @@ from agents.Base_Agent import Base_Agent
 from utilities.data_structures.Replay_Buffer import Replay_Buffer
 from exploration_strategies.OU_Noise_Exploration import OU_Noise_Exploration
 import numpy as np
+import tables
+import os
 
 import time
 
@@ -31,10 +33,39 @@ class DDPG(Base_Agent):
                                           lr=self.hyperparameters["Actor"]["learning_rate"], eps=1e-4)
         self.exploration_strategy = OU_Noise_Exploration(self.config)
 
+        if self.video_mode:
+            self.file_name = "DDPG_"+ self.environment_title
+            for i in range(config.num_episodes_to_run):
+                pathset = os.path.join(self.file_name)
+                if not (os.path.exists(pathset)):
+                    os.mkdir(pathset)
+            # f = tables.open_file(self.file_name, mode = 'w')
+            # f.close()
+            # datainfo = "DDPG_"+ self.environment_title + "_info.txt"
+            # f = open(self.file_name, 'w')
+            # f.close()
+            # f = open(datainfo, 'w')
+            # f.write(str(self.height))
+            # f.write(str(self.width))
+            # f.write(str(self.channel))
+            # f.write(str(config.max_step))
+            # f.write(str(config.num_episodes_to_run))
+            # f.close()
+
+
     def step(self):
         """Runs a step in the game"""
         # print("(DDPG) into the step")
 
+        # if self.video_mode:
+        #     f = open(self.file_name, mode = 'a')
+            # f = open(self.file_name, 'a')
+            # f.write("Episode" + str(self.episode_number) +"\n")
+            # self.f = tables.open_file(self.file_name, mode='a')
+            # self.atom = tables.Int64Atom()
+            # self.array_c = self.f.create_earray(self.f.root, "Episode"+str(self.episode_number), self.atom, (0,self.height, self.width, self.channel))
+        if self.video_mode:
+            render_list = []
         while not self.done:
             # print("State ", self.state.shape)
             self.action = self.pick_action()
@@ -54,7 +85,26 @@ class DDPG(Base_Agent):
             else:
                 self.conduct_action(self.action)
                 # print("(DDPG) action conducted! Rendering...")
-                # self.environment.render()
+                if self.video_mode:
+                    # f = open(self.file_name, mode='wb')
+                    img = self.environment.render('rgb_array')
+                    render_list.append(img)
+                    # img = np.reshape(img, (1)).tolist()
+                    # f.write(str(img))
+                    # f.write('\n')
+                    # img = np.reshape(img, (1, img.shape[0], img.shape[1], img.shape[2]))
+                    # print(type(img))
+                    # print(img.shape)
+                    # print(self.array_c.shape)
+                    # print(img)
+                    # line = '\n'
+                    # f.write(img.tostring())
+                    # f.write(line.encode("utf-8"))
+                    # f.close()
+                    # self.array_c.append(img)
+                # self.render.append(img)
+
+
             # print("(DDPG)outside the loop")
             # print(self.time_for_critic_and_actor_to_learn())
             # This is the learning part
@@ -75,6 +125,10 @@ class DDPG(Base_Agent):
             self.global_step_number += 1
             # print("(DDPG) incrementing step number")
         self.episode_number += 1
+
+        if self.video_mode:
+            render_list = np.array(render_list)
+            np.save(self.file_name+'/episode'+str(self.episode_number), render_list)
         # print("The epsiode end! rendering!!")
         # self.environment.render()
 

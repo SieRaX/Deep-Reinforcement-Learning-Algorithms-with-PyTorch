@@ -15,6 +15,12 @@ class DDPG_HER(HER_Base, DDPG):
         while not self.done:
             self.action = self.pick_action()
             self.conduct_action_in_changeable_goal_envs(self.action)
+
+            # '''Saving img for the videos'''
+            # img = self.environment.render('rgb_array')
+            # self.render.append(img)
+            # ''''''
+
             if self.time_for_critic_and_actor_to_learn():
                 for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
                     states, actions, rewards, next_states, dones = self.sample_from_HER_and_Ordinary_Buffer()  # Samples experiences from buffer

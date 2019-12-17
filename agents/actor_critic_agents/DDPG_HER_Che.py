@@ -16,6 +16,8 @@ class DDPG_HER_Che(HER_Base, DDPG):
 
 			#now concate the goals with next_state
 			self.conduct_action_in_changeable_goal_envs(self.action)
+			# img = self.environment.render('rgb_array')
+			# self.render.append(img)
 			if self.time_for_critic_and_actor_to_learn():
 				for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
 					states, actions, rewards, next_states, dones = self.sample_from_HER_and_Ordinary_Buffer()

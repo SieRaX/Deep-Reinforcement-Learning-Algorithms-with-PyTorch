@@ -4,6 +4,7 @@ import pickle
 import os
 import gym
 from gym import wrappers
+import cv2
 import numpy as np
 from numpy import linalg as LA
 import matplotlib.pyplot as plt
@@ -22,6 +23,9 @@ class Trainer(object):
         self.results = None
         self.colors = ["red", "blue", "green", "orange", "yellow", "purple"]
         self.colour_ix = 0
+
+        # '''get the render list from all the runs and make it as a whole'''
+        # self.render_file_list = []
 
     def create_agent_to_agent_group_dictionary(self):
         """Creates a dictionary that maps an agent to their wider agent group"""
@@ -183,6 +187,16 @@ class Trainer(object):
                 #plt.show()
             agent_round += 1
 
+        '''Saving Videos!'''
+        # h, w, _ = self.render_file_list[0][0].shape
+        # size = (w, h)
+        # out = cv2.VideoWriter('videos/{}_{}.avi'.format(self.environment_name,agent_class.agent_name),
+        #                       cv2.VideoWriter_fourcc(*'DIVX'), 120, size)
+        # for i in range(len(self.render_file_list)):
+        #     for j in range(len(self.render_file_list[0])):
+        #         out.write(self.render_file_list[i][j])
+        # out.release()
+        # print("Saving Complete!!")
         self.results[agent_name] = agent_results
 
     def environment_has_changeable_goals(self, env):

@@ -18,5 +18,7 @@ class Config(object):
         self.randomise_random_seed = True
         self.show_solution_score = False
         self.debug_mode = False
+        self.video_mode = False
+        self.max_step = None
 
 

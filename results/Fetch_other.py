@@ -43,6 +43,12 @@ if directory == "0":
     directory = None
 else:
     directory = "data_and_graphs/" + directory +".png"
+print("Do you want it recorded at video?(N: No, Y: Yes): ", end = "")
+video = input()
+if video == 'N':
+    video = False
+else:
+    video = True
 
 config = Config()
 config.seed = 1
@@ -68,7 +74,8 @@ config.use_GPU = False
 config.overwrite_existing_results_file = False
 config.randomise_random_seed = True
 config.save_model = False
-
+config.video_mode = video
+config.max_step = max_step
 
 config.hyperparameters = {
 
@@ -108,17 +115,17 @@ config.hyperparameters = {
 
 if __name__== '__main__':
     #AGENTS = [DDPG_HER_Che]
-    AGENTS = [DDPG, DDPG_HER_Che, DDPG_HER]
+    AGENTS = [DDPG]
 
-    grid_Train = grid_Train(config, AGENTS)
+    # grid_Train = grid_Train(config, AGENTS)
     # start = time.time()
-    grid_Train.run_games_for_agents()
+    # grid_Train.run_games_for_agents()
     # grid_time = time.time() - start
 
-    # norm_trainer = norm_Train(config, AGENTS)
-    # start = time.time()
-    # norm_trainer.run_games_for_agents()
-    # norm_time = time.time() - start
+    norm_trainer = norm_Train(config, AGENTS)
+    start = time.time()
+    norm_trainer.run_games_for_agents()
+    norm_time = time.time() - start
 
     # print("non-multiprocess time: ", norm_time)
     # print("multiprocess time: ", grid_time)
