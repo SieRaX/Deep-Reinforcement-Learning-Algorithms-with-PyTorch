@@ -64,7 +64,9 @@ class DDPG(Base_Agent):
             # self.f = tables.open_file(self.file_name, mode='a')
             # self.atom = tables.Int64Atom()
             # self.array_c = self.f.create_earray(self.f.root, "Episode"+str(self.episode_number), self.atom, (0,self.height, self.width, self.channel))
-        if self.video_mode:
+
+        record_video = self.video_mode and self.config.num_episodes_to_run - 10 <= self.episode_number
+        if record_video:
             render_list = []
         while not self.done:
             # print("State ", self.state.shape)
@@ -85,7 +87,7 @@ class DDPG(Base_Agent):
             else:
                 self.conduct_action(self.action)
                 # print("(DDPG) action conducted! Rendering...")
-                if self.video_mode:
+                if record_video:
                     # f = open(self.file_name, mode='wb')
                     img = self.environment.render('rgb_array')
                     render_list.append(img)
@@ -124,11 +126,12 @@ class DDPG(Base_Agent):
             self.state = self.next_state #this is to set the state for the next iteration
             self.global_step_number += 1
             # print("(DDPG) incrementing step number")
-        self.episode_number += 1
 
-        if self.video_mode:
+        if record_video:
             render_list = np.array(render_list)
-            np.save(self.file_name+'/episode'+str(self.episode_number), render_list)
+            np.save(self.file_name+'/episode'+str(self.episode_number+1), render_list)
+
+        self.episode_number += 1
         # print("The epsiode end! rendering!!")
         # self.environment.render()
 
