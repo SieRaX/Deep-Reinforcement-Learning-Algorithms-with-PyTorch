@@ -52,9 +52,9 @@ class Base_Agent(object):
         # self.render=[]
         self.video_mode = config.video_mode
 
-        self.environment.reset()
-        img = self.environment.render('rgb_array')
-        self.height, self.width, self.channel = img.shape
+        # self.environment.reset()
+        # img = self.environment.render('rgb_array')
+        # self.height, self.width, self.channel = img.shape
 
     def step(self):
         """Takes a step in the game. This method must be overriden by any agent"""

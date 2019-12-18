@@ -8,7 +8,7 @@ for filename in glob.glob('*.npy'):
 	size = (width, height)
 	break
 
-out = cv2.VideoWriter('project.avi', cv2.VideoWriter_fourcc(*'DIVX'), 60, size)
+out = cv2.VideoWriter('project.avi', cv2.VideoWriter_fourcc(*'DIVX'), 30, size)
 
 # print("Enter the number of episode you want to start: ", end = "")
 # start = int(input())

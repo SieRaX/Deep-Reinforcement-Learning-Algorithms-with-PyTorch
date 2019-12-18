@@ -34,7 +34,7 @@ class DDPG(Base_Agent):
         self.exploration_strategy = OU_Noise_Exploration(self.config)
 
         if self.video_mode:
-            self.file_name = "DDPG_"+ self.environment_title
+            self.file_name = self.agent_name+"_"+ self.environment_title+"_videos"
             for i in range(config.num_episodes_to_run):
                 pathset = os.path.join(self.file_name)
                 if not (os.path.exists(pathset)):

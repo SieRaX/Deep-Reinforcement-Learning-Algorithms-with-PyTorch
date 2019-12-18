@@ -115,7 +115,7 @@ config.hyperparameters = {
 
 if __name__== '__main__':
     #AGENTS = [DDPG_HER_Che]
-    AGENTS = [DDPG]
+    AGENTS = [DDPG_HER, DDPG_HER_Che]
 
     # grid_Train = grid_Train(config, AGENTS)
     # start = time.time()
