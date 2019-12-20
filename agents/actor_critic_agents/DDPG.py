@@ -34,7 +34,7 @@ class DDPG(Base_Agent):
         self.exploration_strategy = OU_Noise_Exploration(self.config)
 
         if self.video_mode:
-            self.file_name = self.agent_name+"_"+ self.environment_title+"_videos"
+            self.file_name = self.environment_title + "_"+self.agent_name+"_videos"
             for i in range(config.num_episodes_to_run):
                 pathset = os.path.join(self.file_name)
                 if not (os.path.exists(pathset)):
@@ -51,6 +51,7 @@ class DDPG(Base_Agent):
             # f.write(str(config.max_step))
             # f.write(str(config.num_episodes_to_run))
             # f.close()
+        self.save_max_result_list_list = []
 
 
     def step(self):
@@ -68,6 +69,7 @@ class DDPG(Base_Agent):
         record_video = self.video_mode and self.config.num_episodes_to_run - 10 <= self.episode_number
         if record_video:
             render_list = []
+        save_max_score_list = []
         while not self.done:
             # print("State ", self.state.shape)
             self.action = self.pick_action()
@@ -87,9 +89,9 @@ class DDPG(Base_Agent):
             else:
                 self.conduct_action(self.action)
                 # print("(DDPG) action conducted! Rendering...")
+                img = self.environment.render('rgb_array')
                 if record_video:
                     # f = open(self.file_name, mode='wb')
-                    img = self.environment.render('rgb_array')
                     render_list.append(img)
                     # img = np.reshape(img, (1)).tolist()
                     # f.write(str(img))
@@ -105,6 +107,7 @@ class DDPG(Base_Agent):
                     # f.close()
                     # self.array_c.append(img)
                 # self.render.append(img)
+                save_max_score_list.append(img)
 
 
             # print("(DDPG)outside the loop")
@@ -130,6 +133,18 @@ class DDPG(Base_Agent):
         if record_video:
             render_list = np.array(render_list)
             np.save(self.file_name+'/episode'+str(self.episode_number+1), render_list)
+
+        if self.total_episode_score_so_far > -0.2:
+            if len(self.save_max_result_list_list) == 10:
+                self.save_max_result_list_list.pop(0)
+            self.save_max_result_list_list.append(save_max_score_list)
+
+        if self.config.num_episodes_to_run == self.episode_number + 1:
+            i = 1
+            for save_max_score_list in self.save_max_result_list_list:
+                save_max_score_list = np.array(save_max_score_list)
+                np.save(self.file_name + '/maxscore' + str(i), save_max_score_list)
+                i += 1
 
         self.episode_number += 1
         # print("The epsiode end! rendering!!")

@@ -10,13 +10,17 @@ class DDPG_HER_Che(HER_Base, DDPG):
 		DDPG.__init__(self, config)
 		HER_Base.__init__(self, self.hyperparameters["Critic"]["buffer_size"], self.hyperparameters["batch_size"],
                           self.hyperparameters["HER_sample_proportion"])
+		self.save_max_result_list_list = []
 
 	def step(self):
 		"""Runs a step within a game including a learning step if required"""
 
 		record_video = self.video_mode and self.config.num_episodes_to_run - 10 <= self.episode_number
+
 		if record_video:
 			render_list = []
+
+		save_max_score_list = []
 
 		while not self.done:
 			self.action = self.pick_action()
@@ -26,10 +30,11 @@ class DDPG_HER_Che(HER_Base, DDPG):
 			# img = self.environment.render('rgb_array')
 			# self.render.append(img)
 
+			img = self.environment.render('rgb_array')
 			if record_video:
 				# f = open(self.file_name, mode='wb')
-				img = self.environment.render('rgb_array')
 				render_list.append(img)
+			save_max_score_list.append(img)
 
 			if self.time_for_critic_and_actor_to_learn():
 				for _ in range(self.hyperparameters["learning_updates_per_learning_session"]):
@@ -51,6 +56,19 @@ class DDPG_HER_Che(HER_Base, DDPG):
 		if record_video:
 			render_list = np.array(render_list)
 			np.save(self.file_name + '/episode' + str(self.episode_number + 1), render_list)
+
+		if self.total_episode_score_so_far > -0.2:
+			if len(self.save_max_result_list_list) == 10:
+				self.save_max_result_list_list.pop(0)
+			self.save_max_result_list_list.append(save_max_score_list)
+
+		if self.config.num_episodes_to_run == self.episode_number + 1:
+			i = 1
+			for save_max_score_list in self.save_max_result_list_list:
+				save_max_score_list = np.array(save_max_score_list)
+				np.save(self.file_name+'/maxscore'+str(i), save_max_score_list)
+				i += 1
+
 		self.episode_number += 1
 
 	def enough_experiences_to_learn_from(self):

@@ -8,7 +8,8 @@ for filename in glob.glob('*.npy'):
 	size = (width, height)
 	break
 
-out = cv2.VideoWriter('project.avi', cv2.VideoWriter_fourcc(*'DIVX'), 30, size)
+out = cv2.VideoWriter('project.avi', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
+score = cv2.VideoWriter('maxscore.avi', cv2.VideoWriter_fourcc(*'DIVX'), 15, size)
 
 # print("Enter the number of episode you want to start: ", end = "")
 # start = int(input())
@@ -22,8 +23,13 @@ a.sort( key=lambda f: int(''.join(filter(str.isdigit, f))) )
 for filename in a:
 
 	img_array = np.load(filename)
-	for i in range(shot):
-			out.write(img_array[i])
+	if 'max' in filename:
+		for i in range(shot):
+			score.write(img_array[i])
+
+	else:
+		for i in range(shot):
+			out.write(img_array[i])		
 	# if start <= i and i <= end:
 	# 	img_array = np.load(filename)
 	# 	for i in range(shot):
